@@ -26,7 +26,7 @@ urlpatterns = [
         name='login'
     ),
     path(
-        'password_change/done/',
+        'password_change_done/',
         PasswordChangeDoneView.as_view(
             template_name='users/password_change_done.html'
         ),
