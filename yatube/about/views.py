@@ -4,6 +4,7 @@ from django.views.generic.base import TemplateView
 class JustStaticPage(TemplateView):
     template_name = 'about/just_page.html'
 
+
 class AboutAuthorView(TemplateView):
     template_name = 'about/author.html'
 

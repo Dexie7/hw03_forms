@@ -12,6 +12,7 @@ class CreationForm(UserCreationForm):
         model = User
         fields = ('first_name', 'last_name', 'username', 'email')
 
+
 class SetPassword(SetPasswordForm):
     class Meta(PasswordChangeForm):
         fields = ('old_password', 'new_password1', 'new_password2')
