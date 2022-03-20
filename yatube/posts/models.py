@@ -11,7 +11,7 @@ class Group(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return f'{self.title} - {self.slug}'
+        return self.title
 
 
 class Post(models.Model):

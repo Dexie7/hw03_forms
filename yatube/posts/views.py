@@ -7,67 +7,54 @@ from . models import Post, Group
 from .forms import PostForm
 
 
-def paginator_my(request, post_list):
-    paginator = Paginator(post_list, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return page_obj
+def paginator_return(request, post_list):
+    return Paginator(post_list, 10).get_page(request.GET.get('page'))
 
 
 def index(request):
-    post_list = Post.objects.all()
-    page_obj = paginator_my(request, post_list)
-    context = {
-        'page_obj': page_obj,
-    }
-    return render(request, 'posts/index.html', context)
+    return render(request, 'posts/index.html', {
+        'page_obj': paginator_return(request, Post.objects.all()),
+    })
 
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = group.posts.all()
-    page_obj = paginator_my(request, post_list)
-    context = {
+    return render(request, 'posts/group_list.html', {
         'group': group,
-        "page_obj": page_obj,
-    }
-    return render(request, 'posts/group_list.html', context)
+        "page_obj": paginator_return(request, group.posts.all()),
+    })
 
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    full_name = author.get_full_name()
-    post_list = author.posts.all()
-    post_count = post_list.count()
-    page_obj = paginator_my(request, post_list)
-    context = {
-        'page_obj': page_obj,
-        'post_count': post_count,
-        'full_name': full_name,
+    return render(request, 'posts/profile.html', {
+        'page_obj': paginator_return(request, author.posts.all()),
         'author': author,
-    }
-    return render(request, 'posts/profile.html', context)
+        'posts_count': author.posts.all().count(),
+    })
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    context = {
+    autor = get_object_or_404(User, username=post.author)
+    return render(request, 'posts/post_detail.html', {
         'post': post,
-        'post_id': post_id,
-    }
-    return render(request, 'posts/post_detail.html', context)
+        'post_number': autor.posts.filter(author=autor).count(),
+    })
 
 
 @login_required
 def post_create(request):
     form = PostForm(request.POST or None)
-    author = request.user
     if not form.is_valid():
         return render(request, 'posts/create_post.html', {'form': form})
     post = form.save(commit=False)
-    post.author = author
+    post.author = request.user
     post.save()
-    return redirect('posts:profile', author)
+    return redirect(
+        'posts:profile',
+        username=request.user.username
+    )
 
 
 @login_required
@@ -79,9 +66,8 @@ def post_edit(request, post_id):
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id=post.pk)
-    context = {
+    return render(request, 'posts/create_post.html', {
         'form': form,
         'post': post,
         'is_edit': True,
-    }
-    return render(request, 'posts/create_post.html', context)
+    })
