@@ -7,13 +7,13 @@ from . models import Post, Group
 from .forms import PostForm
 
 
-def paginator_return(request, post_list):
+def page_paginator(request, post_list):
     return Paginator(post_list, 10).get_page(request.GET.get('page'))
 
 
 def index(request):
     return render(request, 'posts/index.html', {
-        'page_obj': paginator_return(request, Post.objects.all()),
+        'page_obj': page_paginator(request, Post.objects.all()),
     })
 
 
@@ -21,25 +21,22 @@ def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     return render(request, 'posts/group_list.html', {
         'group': group,
-        "page_obj": paginator_return(request, group.posts.all()),
+        "page_obj": page_paginator(request, group.posts.all()),
     })
 
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     return render(request, 'posts/profile.html', {
-        'page_obj': paginator_return(request, author.posts.all()),
+        'page_obj': page_paginator(request, author.posts.all()),
         'author': author,
-        'posts_count': author.posts.all().count(),
     })
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    autor = get_object_or_404(User, username=post.author)
     return render(request, 'posts/post_detail.html', {
         'post': post,
-        'post_number': autor.posts.filter(author=autor).count(),
     })
 
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{% if not post %} Добавить запись {% else %} Редактировать запись {% endif %}{% endblock %}
 {% block content %}
-{% load user_filters %}
+  {% load user_filters %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-8 p-5">
@@ -45,11 +45,11 @@
                   {% endif %}
                 </div>
               {% endfor %}            
-            <div class="col-md-6 offset-md-4">
-              <button type="submit" class="btn btn-primary">
-                {% if post %} Сохранить {% else %} Добавить {% endif %}               
-              </button>
-            </div>
+              <div class="col-md-6 offset-md-4">
+                <button type="submit" class="btn btn-primary">
+                  {% if post %} Сохранить {% else %} Добавить {% endif %}               
+                </button>
+              </div>
             </form> 
           </div>
         </div>
